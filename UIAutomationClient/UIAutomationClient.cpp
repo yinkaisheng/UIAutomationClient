@@ -386,6 +386,18 @@ extern "C"
 		return controlType;
 	}
 
+	DLL_EXPORT size_t GetElementLocalizedControlType(size_t element)
+	{
+		BSTR name = nullptr;
+		IUIAutomationElement* pElement = reinterpret_cast<IUIAutomationElement*>(element);
+		CONTROLTYPEID controlType = 0;
+		if (pElement)
+		{
+			pElement->get_CurrentLocalizedControlType(&name);
+		}
+		return reinterpret_cast<size_t>(name);;
+	}
+
 	DLL_EXPORT HRESULT GetElementBoundingRectangle(size_t element, RECT* pRect)
 	{
 		IUIAutomationElement* pElement = reinterpret_cast<IUIAutomationElement*>(element);

@@ -68,6 +68,8 @@ extern "C"
 
 	DLL_EXPORT int GetElementControlType(size_t element);
 
+	DLL_EXPORT size_t GetElementLocalizedControlType(size_t element);
+
 	DLL_EXPORT HRESULT GetElementBoundingRectangle(size_t element, RECT* pRect);
 
 	DLL_EXPORT BOOL GetElementIsEnabled(size_t element);
