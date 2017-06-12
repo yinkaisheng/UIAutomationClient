@@ -220,6 +220,12 @@ extern "C"
 
 	DLL_EXPORT int GridItemPatternCurrentColumnSpan(size_t pattern);
 
+	DLL_EXPORT HRESULT TransformPatternMove(size_t pattern, int x, int y);
+
+	DLL_EXPORT HRESULT TransformPatternResize(size_t pattern, int width, int height);
+
+	DLL_EXPORT HRESULT TransformPatternRotate(size_t pattern, int degrees);
+
 	DLL_EXPORT size_t BitmapCreate(int width, int height);
 
 	DLL_EXPORT size_t BitmapFromWindow(size_t wnd, int left, int top, int right, int bottom);

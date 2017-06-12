@@ -1440,10 +1440,52 @@ extern "C"
 		return value;
 	}
 
-	int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
+	DLL_EXPORT HRESULT TransformPatternMove(size_t pattern, int x, int y)
 	{
-		UINT  num = 0;          // number of image encoders
-		UINT  size = 0;         // size of the image encoder array in bytes
+		IUnknown *pUnknown = reinterpret_cast<IUnknown*>(pattern);
+		if (pUnknown)
+		{
+			IUIAutomationTransformPattern *pPattern = static_cast<IUIAutomationTransformPattern*>(pUnknown);
+			if (pPattern)
+			{
+				return pPattern->Move(x, y);
+			}
+		}
+		return S_FALSE;
+	}
+
+	DLL_EXPORT HRESULT TransformPatternResize(size_t pattern, int width, int height)
+	{
+		IUnknown *pUnknown = reinterpret_cast<IUnknown*>(pattern);
+		if (pUnknown)
+		{
+			IUIAutomationTransformPattern *pPattern = static_cast<IUIAutomationTransformPattern*>(pUnknown);
+			if (pPattern)
+			{
+				return pPattern->Resize(width, height);
+			}
+		}
+		return S_FALSE;
+	}
+
+	DLL_EXPORT HRESULT TransformPatternRotate(size_t pattern, int degrees)
+	{
+		IUnknown *pUnknown = reinterpret_cast<IUnknown*>(pattern);
+		if (pUnknown)
+		{
+			IUIAutomationTransformPattern *pPattern = static_cast<IUIAutomationTransformPattern*>(pUnknown);
+			if (pPattern)
+			{
+				return pPattern->Rotate(degrees);
+			}
+		}
+		return S_FALSE;
+	}
+
+	int GetImageEncoderClsid(const WCHAR* format, CLSID* pClsid)
+	{
+		UINT num = 0;          // number of image encoders
+		UINT size = 0;         // size of the image encoder array in bytes
 
 		ImageCodecInfo* pImageCodecInfo = NULL;
 
@@ -1465,7 +1507,7 @@ extern "C"
 				*pClsid = pImageCodecInfo[j].Clsid;
 				free(pImageCodecInfo);
 				return j;  // Success
-			}    
+			}
 		}
 
 		free(pImageCodecInfo);
@@ -1530,7 +1572,7 @@ extern "C"
 		{
 			Bitmap* pBitmap = reinterpret_cast<Bitmap*>(bitmap);
 			CLSID imgClsId;
-			int retVal = GetEncoderClsid(gdiplusFormat, &imgClsId);
+			int retVal = GetImageEncoderClsid(gdiplusFormat, &imgClsId);
 			if (retVal >= 0)
 			{
 				pBitmap->Save(path, &imgClsId, NULL);
