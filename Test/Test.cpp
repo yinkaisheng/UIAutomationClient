@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include <Windows.h>
 #include <Locale.h>
-#include "../UIAutomationClient/UIAutomationClient.h"
+#include "../src/UIAutomationClient.h"
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -15,7 +15,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		size_t name = GetElementName(root);
 		BSTR bName = (BSTR)name;
         WCHAR *pszName = (WCHAR*)bName;
-		wprintf(L"root: %s\n", pszName);
+		wprintf(L"root control: %s\n", pszName);
 		FreeBSTR(name);
 		ReleaseElement(root);
 

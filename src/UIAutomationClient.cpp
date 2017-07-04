@@ -11,6 +11,10 @@ using namespace Gdiplus;
 #define __EXPORT_DLL__
 #include "UIAutomationClient.h"
 
+#if (_MSC_VER <= 1500)
+#define nullptr 0
+#endif
+
 IUIAutomation *g_pAutomation = nullptr;
 IUIAutomationTreeWalker *g_pRawTreeWalker = nullptr;
 ULONG_PTR g_nGdiPlusToken = 0;
