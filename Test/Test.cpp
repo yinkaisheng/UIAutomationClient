@@ -11,16 +11,38 @@ int _tmain(int argc, _TCHAR* argv[])
 	setlocale(LC_ALL, "chs");
 	if (InitInstance())
 	{
-		size_t root = GetRootElement();
-		size_t name = GetElementName(root);
-		BSTR bName = (BSTR)name;
-        WCHAR *pszName = (WCHAR*)bName;
-		wprintf(L"root control: %s\n", pszName);
-		FreeBSTR(name);
-		ReleaseElement(root);
+        int processId = GetCurrentProcessId();
+        TCHAR szText[MAX_PATH] = { 0 };
+        GetProcessCommandLine(processId, szText, MAX_PATH);
+        wprintf(L"ProcessCommandLine: %s\n\n", szText);
 
-		size_t cmd = GetProcessCommandLine(6212);
-		DeleteWCharArray(cmd);
+		size_t root = GetRootElement();
+        size_t name = GetElementClassName(root);
+        wprintf(L"ClassName: %s", (WCHAR*)(BSTR)name);
+        FreeBSTR(name);
+
+        name = GetElementName(root);
+        wprintf(L"    Name: %s\n", (WCHAR*)(BSTR)name);
+        FreeBSTR(name);
+
+        size_t current = GetFirstChildElement(root);
+        size_t next = current;
+        while (current)
+        {
+            name = GetElementClassName(current);
+            wprintf(L"    ClassName: %s", (WCHAR*)(BSTR)name);
+            FreeBSTR(name);
+
+            name = GetElementName(current);
+            wprintf(L"    Name: %s\n", (WCHAR*)(BSTR)name);
+            FreeBSTR(name);
+
+            next = GetNextSiblingElement(current);
+            ReleaseElement(current);
+            current = next;
+        }
+
+		ReleaseElement(root);
 
 		size_t bitmap = BitmapCreate(500, 500);
 		DWORD start = GetTickCount();
