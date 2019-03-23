@@ -12,9 +12,9 @@ extern "C"
 {
 #endif
 
-    DLL_EXPORT void InitInstance();
+    DLL_EXPORT void Initialize();
 
-    DLL_EXPORT void ReleaseInstance();
+    DLL_EXPORT void Uninitialize();
 
     DLL_EXPORT size_t BitmapCreate(int width, int height);
 

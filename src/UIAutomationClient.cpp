@@ -24,7 +24,6 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     {
     case DLL_PROCESS_ATTACH:
         {
-			InitInstance();
             break;
         }
     case DLL_THREAD_ATTACH:
@@ -37,7 +36,6 @@ BOOL APIENTRY DllMain( HMODULE hModule,
         }
     case DLL_PROCESS_DETACH:
         {
-            ReleaseInstance();
             break;
         }
     }
@@ -49,7 +47,7 @@ extern "C"
 {
 #endif
 
-    DLL_EXPORT void InitInstance()
+    DLL_EXPORT void Initialize()
     {
         if (!g_nGdiPlusToken)
         {
@@ -58,7 +56,7 @@ extern "C"
         }
     }
 
-    DLL_EXPORT void ReleaseInstance()
+    DLL_EXPORT void Uninitialize()
     {
         if (g_nGdiPlusToken)
         {
