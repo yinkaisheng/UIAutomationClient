@@ -16,3 +16,4 @@ UIAutomationClient_VC140_X86.dll
 
 in bin folder.
 
+You can use uiautomation without those dlls, but the functionalities related to Bitmap will not be available.
