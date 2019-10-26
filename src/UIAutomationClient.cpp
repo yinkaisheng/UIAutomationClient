@@ -13,6 +13,13 @@ using namespace Gdiplus;
 #define nullptr 0
 #endif
 
+struct MonitorsInfo
+{
+    int* pRect;
+    int size;
+    int index;
+};
+
 ULONG_PTR g_nGdiPlusToken = 0;
 
 BOOL APIENTRY DllMain( HMODULE hModule,
@@ -63,6 +70,34 @@ extern "C"
             GdiplusShutdown(g_nGdiPlusToken);
             g_nGdiPlusToken = 0;
         }
+    }
+
+    BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdc, LPRECT pRect, LPARAM lParam)
+    {
+        MonitorsInfo &monitorsInfo = *((MonitorsInfo*)lParam);
+        if (monitorsInfo.index > monitorsInfo.size - 4)
+        {
+            return FALSE;
+        }
+
+        monitorsInfo.pRect[monitorsInfo.index++] = pRect->left;
+        monitorsInfo.pRect[monitorsInfo.index++] = pRect->top;
+        monitorsInfo.pRect[monitorsInfo.index++] = pRect->right;
+        monitorsInfo.pRect[monitorsInfo.index++] = pRect->bottom;
+
+        return TRUE;
+    }
+
+    DLL_EXPORT UINT GetMonitorsRect(int* pInt, int size)
+    {
+        if (pInt == nullptr || size <= 0)
+        {
+            return 0;
+        }
+
+        MonitorsInfo monitorsInfo{ pInt, size, 0 };
+        EnumDisplayMonitors(NULL, NULL, MonitorEnumProc, (LPARAM)&monitorsInfo);
+        return monitorsInfo.index / 4;
     }
 	
     int GetImageEncoderClsid(const wchar_t* format, CLSID* pClsid)

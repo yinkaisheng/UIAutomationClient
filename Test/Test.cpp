@@ -7,6 +7,15 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+    const int MSIZE = 8;
+    int rects[MSIZE]{ 0 };
+    UINT count = GetMonitorsRect(rects, MSIZE);
+    for (int val : rects)
+    {
+        printf("%d\n", val);
+    }
+    return 0;
+
 	size_t bitmap = BitmapCreate(500, 500);
 
 	for (int x = 0; x < 500; ++x)
