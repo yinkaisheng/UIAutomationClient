@@ -193,8 +193,10 @@ extern "C"
             int retVal = GetImageEncoderClsid(gdiplusFormat, &imgClsId);
             if (retVal >= 0)
             {
-                pBitmap->Save(path, &imgClsId, nullptr);
-                return TRUE;
+                if (Status::Ok == pBitmap->Save(path, &imgClsId, nullptr))
+                {
+                    return TRUE;
+                }
             }
         }
 
