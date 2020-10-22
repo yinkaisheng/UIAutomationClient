@@ -157,16 +157,6 @@ extern "C"
         RECT rcWnd;
         GetWindowRect(hWnd, &rcWnd);
 
-        if (right <= 0)
-        {
-            right = rcWnd.right - rcWnd.left;
-        }
-
-        if (bottom <= 0)
-        {
-            bottom = rcWnd.bottom - rcWnd.top;
-        }
-
         HDC hdc = GetWindowDC(hWnd);
         HBITMAP hBitmap = CopyDC2Bitmap(hdc, left, top, right, bottom);
 
