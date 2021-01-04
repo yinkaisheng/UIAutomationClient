@@ -1,5 +1,6 @@
 //Author: yinkaisheng@live.com
 #include "stdafx.h"
+#include <memory>
 #include <tchar.h>
 #include <stdio.h>
 #include <gdiplus.h>
@@ -13,14 +14,21 @@ using namespace Gdiplus;
 #define nullptr 0
 #endif
 
+
+ULONG_PTR g_nGdiPlusToken = 0;
+
+struct LibraryDeleter
+{
+    typedef HMODULE pointer;
+    void operator()(HMODULE h) { ::FreeLibrary(h); }
+};
+
 struct MonitorsInfo
 {
     int* pRect;
     int size;
     int index;
 };
-
-ULONG_PTR g_nGdiPlusToken = 0;
 
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
@@ -88,15 +96,29 @@ extern "C"
         return TRUE;
     }
 
-    DLL_EXPORT UINT GetMonitorsRect(int* pInt, int size)
+    DLL_EXPORT UINT GetMonitorsRect(int* pInt, int size, int dpiAwareness)
     {
         if (pInt == nullptr || size <= 0)
         {
             return 0;
         }
 
+        std::unique_ptr<HMODULE, LibraryDeleter> dll(::LoadLibraryW(L"Shcore.dll"));
+
+        if (dll)
+        {
+            typedef HRESULT(WINAPI *PFN_SetProcessDpiAwareness)(int value);
+            PFN_SetProcessDpiAwareness pSetProcessDpiAwareness = (PFN_SetProcessDpiAwareness)GetProcAddress(dll.get(), "SetProcessDpiAwareness");
+
+            if (pSetProcessDpiAwareness)
+            {
+                pSetProcessDpiAwareness(dpiAwareness);
+            }
+        }
+
         MonitorsInfo monitorsInfo{ pInt, size, 0 };
-        EnumDisplayMonitors(NULL, NULL, MonitorEnumProc, (LPARAM)&monitorsInfo);
+        EnumDisplayMonitors(nullptr, nullptr, MonitorEnumProc, (LPARAM)&monitorsInfo);
+
         return monitorsInfo.index / 4;
     }
 	

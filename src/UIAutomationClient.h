@@ -16,7 +16,7 @@ extern "C"
 
     DLL_EXPORT void Uninitialize();
 
-    DLL_EXPORT UINT GetMonitorsRect(int* pInt, int size);
+    DLL_EXPORT UINT GetMonitorsRect(int* pInt, int size, int dpiAwareness);
 
     DLL_EXPORT size_t BitmapCreate(int width, int height);
 

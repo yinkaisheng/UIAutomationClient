@@ -3,17 +3,30 @@
 
 #include "stdafx.h"
 #include <Windows.h>
+#include <vector>
 #include "../src/UIAutomationClient.h"
+
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-    const int MSIZE = 8;
-    int rects[MSIZE]{ 0 };
-    UINT count = GetMonitorsRect(rects, MSIZE);
+    int mCount = GetSystemMetrics(SM_CMONITORS);
+    std::vector<int> rects(mCount*4, 0);
+    UINT count = GetMonitorsRect(&rects[0], (int)rects.size(), 0);
+    printf("dpi aware = 0\n");
     for (int val : rects)
     {
         printf("%d\n", val);
     }
+
+    printf("\ndpi aware = 2\n");
+    count = GetMonitorsRect(&rects[0], (int)rects.size(), 2);
+    for (int val : rects)
+    {
+        printf("%d\n", val);
+    }
+
+
+    getchar();
     return 0;
 
 	size_t bitmap = BitmapCreate(500, 500);
