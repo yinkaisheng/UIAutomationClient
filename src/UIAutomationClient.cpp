@@ -293,17 +293,21 @@ extern "C"
         {
             Bitmap* pBitmap = reinterpret_cast<Bitmap*>(bitmap);
             int width = static_cast<int>(pBitmap->GetWidth());
-			Color color;
-			for (int n = 0; n < size; ++n)
+            Gdiplus::Rect rect;
+            rect.X = x;
+            rect.Y = y;
+            rect.Width = size;
+            rect.Height = 1;
+            if (x + size > width)
             {
-                pBitmap->GetPixel(x, y, &color);
-                array[n] = color.GetValue();
-                if (++x >= width)
-                {
-                    x = 0;
-                    ++y;
-                }
+                rect.X = 0;
+                rect.Width = width;
+                rect.Height += (size - x) / width + 1;
             }
+            Gdiplus::BitmapData bmpData{};
+            pBitmap->LockBits(&rect, Gdiplus::ImageLockMode::ImageLockModeRead, PixelFormat32bppARGB, &bmpData);
+            memcpy(array, x + size > width ? (char*)bmpData.Scan0 + x * 4 : (char*)bmpData.Scan0, size * 4);
+            pBitmap->UnlockBits(&bmpData);
             return TRUE;
         }
 
@@ -339,17 +343,21 @@ extern "C"
         {
             Bitmap* pBitmap = reinterpret_cast<Bitmap*>(bitmap);
             int width = static_cast<int>(pBitmap->GetWidth());
-			Color color;
-			for (int n = 0; n < size; ++n)
+            Gdiplus::Rect rect;
+            rect.X = x;
+            rect.Y = y;
+            rect.Width = size;
+            rect.Height = 1;
+            if (x + size > width)
             {
-                color.SetValue(array[n]);
-                pBitmap->SetPixel(x, y, color);
-                if (++x >= width)
-                {
-                    x = 0;
-                    ++y;
-                }
+                rect.X = 0;
+                rect.Width = width;
+                rect.Height += (size - x) / width + 1;
             }
+            Gdiplus::BitmapData bmpData{};
+            pBitmap->LockBits(&rect, Gdiplus::ImageLockMode::ImageLockModeRead, PixelFormat32bppARGB, &bmpData);
+            memcpy(x + size > width ? (char*)bmpData.Scan0 + x * 4 : (char*)bmpData.Scan0, array, size * 4);
+            pBitmap->UnlockBits(&bmpData);
             return TRUE;
         }
 
@@ -383,17 +391,17 @@ extern "C"
 	{
 		if (bitmap && array)
 		{
-			Bitmap* pBitmap = reinterpret_cast<Bitmap*>(bitmap);
-			Color color;
-			int index = 0;
-			for (int col = y; col < y + height; ++col)
-			{
-				for (int row = x; row < x + width; ++row)
-				{
-					pBitmap->GetPixel(row, col, &color);
-					array[index++] = color.GetValue();
-				}
-			}
+            Bitmap* pBitmap = reinterpret_cast<Bitmap*>(bitmap);
+            Gdiplus::Rect rect(x,y,width,height);
+            Gdiplus::BitmapData bmpData{};
+            bmpData.Width = rect.Width;
+            bmpData.Height = rect.Height;
+            bmpData.PixelFormat = PixelFormat32bppARGB;
+            bmpData.Stride = rect.Width * 4;
+            bmpData.Scan0 = array;
+            pBitmap->LockBits(&rect, Gdiplus::ImageLockMode::ImageLockModeUserInputBuf | Gdiplus::ImageLockMode::ImageLockModeRead,
+                PixelFormat32bppARGB, &bmpData);
+            pBitmap->UnlockBits(&bmpData);
 			return TRUE;
 		}
 
@@ -404,18 +412,18 @@ extern "C"
 	{
 		if (bitmap && array)
 		{
-			Bitmap* pBitmap = reinterpret_cast<Bitmap*>(bitmap);
-			Color color;
-			int index = 0;
-			for (int col = y; col < y + height; ++col)
-			{
-				for (int row = x; row < x + width; ++row)
-				{
-					color.SetValue(array[index++]);
-					pBitmap->SetPixel(row, col, color);
-				}
-			}
-			return TRUE;
+            Bitmap* pBitmap = reinterpret_cast<Bitmap*>(bitmap);
+            Gdiplus::Rect rect(x, y, width, height);
+            Gdiplus::BitmapData bmpData{};
+            bmpData.Width = rect.Width;
+            bmpData.Height = rect.Height;
+            bmpData.PixelFormat = PixelFormat32bppARGB;
+            bmpData.Stride = rect.Width * 4;
+            bmpData.Scan0 = array;
+            pBitmap->LockBits(&rect, Gdiplus::ImageLockMode::ImageLockModeUserInputBuf | Gdiplus::ImageLockMode::ImageLockModeWrite,
+                PixelFormat32bppARGB, &bmpData);
+            pBitmap->UnlockBits(&bmpData);
+            return TRUE;
 		}
 
 		return FALSE;
