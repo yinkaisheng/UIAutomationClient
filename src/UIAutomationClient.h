@@ -22,6 +22,10 @@ extern "C"
 
     DLL_EXPORT size_t BitmapFromWindow(size_t wnd, int left, int top, int right, int bottom);
 
+    DLL_EXPORT size_t BitmapFromHBITMAP(size_t hBitmap);
+
+    DLL_EXPORT size_t BitmapToHBITMAP(size_t bitmap, UINT backgroundArgb = 0xFFFFFFFF);
+
     DLL_EXPORT size_t BitmapFromFile(LPCTSTR path);
 
     DLL_EXPORT BOOL BitmapToFile(size_t bitmap, LPCTSTR path, LPCTSTR gdiplusFormat);

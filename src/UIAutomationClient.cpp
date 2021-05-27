@@ -190,6 +190,32 @@ extern "C"
         return reinterpret_cast<size_t>(pBitmap);
     }
 
+    DLL_EXPORT size_t BitmapFromHBITMAP(size_t hBitmap)
+    {
+        if (hBitmap == 0)
+        {
+            return 0;
+        }
+
+        HBITMAP hBmp = reinterpret_cast<HBITMAP>(hBitmap);
+        Bitmap *pBitmap = Bitmap::FromHBITMAP(hBmp, nullptr);
+        return reinterpret_cast<size_t>(pBitmap);
+    }
+
+    DLL_EXPORT size_t BitmapToHBITMAP(size_t bitmap, UINT backArgb)
+    {
+        if (bitmap == 0)
+        {
+            return 0;
+        }
+
+        Bitmap* pBitmap = reinterpret_cast<Bitmap*>(bitmap);
+        HBITMAP hBitmap{};
+        Gdiplus::Color back{backArgb>>24, (backArgb>>16)&&0xFF, (backArgb>>8)&&0xFF, backArgb&&0xFF};
+        pBitmap->GetHBITMAP(back, &hBitmap);
+        return reinterpret_cast<size_t>(hBitmap);
+    }
+
     DLL_EXPORT size_t BitmapFromFile(LPCTSTR path)
     {
         Bitmap* pBitmap = Bitmap::FromFile(path);
