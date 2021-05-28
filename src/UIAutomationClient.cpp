@@ -121,7 +121,7 @@ extern "C"
 
         return monitorsInfo.index / 4;
     }
-	
+
     int GetImageEncoderClsid(const wchar_t* format, CLSID* pClsid)
     {
         UINT num = 0;          // number of image encoders
@@ -302,35 +302,12 @@ extern "C"
             {
                 rect.X = 0;
                 rect.Width = width;
-                rect.Height += (size - x) / width + 1;
+                rect.Height += (size + x - 1) / width;
             }
             Gdiplus::BitmapData bmpData{};
             pBitmap->LockBits(&rect, Gdiplus::ImageLockMode::ImageLockModeRead, PixelFormat32bppARGB, &bmpData);
             memcpy(array, x + size > width ? (char*)bmpData.Scan0 + x * 4 : (char*)bmpData.Scan0, size * 4);
             pBitmap->UnlockBits(&bmpData);
-            return TRUE;
-        }
-
-        return FALSE;
-    }
-
-    DLL_EXPORT BOOL BitmapGetPixelsVertically(size_t bitmap, int x, int y, UINT* array, int size)
-    {
-        if (bitmap && array)
-        {
-            Bitmap* pBitmap = reinterpret_cast<Bitmap*>(bitmap);
-            int height = static_cast<int>(pBitmap->GetHeight());
-			Color color;
-			for (int n = 0; n < size; ++n)
-            {
-                pBitmap->GetPixel(x, y, &color);
-                array[n] = color.GetValue();
-                if (++y >= height)
-                {
-                    y = 0;
-                    ++x;
-                }
-            }
             return TRUE;
         }
 
@@ -352,12 +329,36 @@ extern "C"
             {
                 rect.X = 0;
                 rect.Width = width;
-                rect.Height += (size - x) / width + 1;
+                rect.Height += (size + x - 1) / width;
             }
+
             Gdiplus::BitmapData bmpData{};
             pBitmap->LockBits(&rect, Gdiplus::ImageLockMode::ImageLockModeRead, PixelFormat32bppARGB, &bmpData);
             memcpy(x + size > width ? (char*)bmpData.Scan0 + x * 4 : (char*)bmpData.Scan0, array, size * 4);
             pBitmap->UnlockBits(&bmpData);
+            return TRUE;
+        }
+
+        return FALSE;
+    }
+
+    DLL_EXPORT BOOL BitmapGetPixelsVertically(size_t bitmap, int x, int y, UINT* array, int size)
+    {
+        if (bitmap && array)
+        {
+            Bitmap* pBitmap = reinterpret_cast<Bitmap*>(bitmap);
+            int height = static_cast<int>(pBitmap->GetHeight());
+            Color color;
+            for (int n = 0; n < size; ++n)
+            {
+                pBitmap->GetPixel(x, y, &color);
+                array[n] = color.GetValue();
+                if (++y >= height)
+                {
+                    y = 0;
+                    ++x;
+                }
+            }
             return TRUE;
         }
 
@@ -370,10 +371,10 @@ extern "C"
         {
             Bitmap* pBitmap = reinterpret_cast<Bitmap*>(bitmap);
             int height = static_cast<int>(pBitmap->GetHeight());
-			Color color;
-			for (int n = 0; n < size; ++n)
+            Color color;
+            for (int n = 0; n < size; ++n)
             {
-				color.SetValue(array[n]);
+                color.SetValue(array[n]);
                 pBitmap->SetPixel(x, y, color);
                 if (++y >= height)
                 {
@@ -387,10 +388,10 @@ extern "C"
         return FALSE;
     }
 
-	DLL_EXPORT BOOL BitmapGetPixelsOfRect(size_t bitmap, int x, int y, int width, int height, UINT* array)
-	{
-		if (bitmap && array)
-		{
+    DLL_EXPORT BOOL BitmapGetPixelsOfRect(size_t bitmap, int x, int y, int width, int height, UINT* array)
+    {
+        if (bitmap && array)
+        {
             Bitmap* pBitmap = reinterpret_cast<Bitmap*>(bitmap);
             Gdiplus::Rect rect(x,y,width,height);
             Gdiplus::BitmapData bmpData{};
@@ -402,16 +403,16 @@ extern "C"
             pBitmap->LockBits(&rect, Gdiplus::ImageLockMode::ImageLockModeUserInputBuf | Gdiplus::ImageLockMode::ImageLockModeRead,
                 PixelFormat32bppARGB, &bmpData);
             pBitmap->UnlockBits(&bmpData);
-			return TRUE;
-		}
+            return TRUE;
+        }
 
-		return FALSE;
-	}
+        return FALSE;
+    }
 
-	DLL_EXPORT BOOL BitmapSetPixelsOfRect(size_t bitmap, int x, int y, int width, int height, UINT* array)
-	{
-		if (bitmap && array)
-		{
+    DLL_EXPORT BOOL BitmapSetPixelsOfRect(size_t bitmap, int x, int y, int width, int height, UINT* array)
+    {
+        if (bitmap && array)
+        {
             Bitmap* pBitmap = reinterpret_cast<Bitmap*>(bitmap);
             Gdiplus::Rect rect(x, y, width, height);
             Gdiplus::BitmapData bmpData{};
@@ -424,10 +425,10 @@ extern "C"
                 PixelFormat32bppARGB, &bmpData);
             pBitmap->UnlockBits(&bmpData);
             return TRUE;
-		}
+        }
 
-		return FALSE;
-	}
+        return FALSE;
+    }
 
 #ifdef __cplusplus
 }

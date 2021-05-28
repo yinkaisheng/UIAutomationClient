@@ -40,15 +40,15 @@ extern "C"
 
     DLL_EXPORT BOOL BitmapGetPixelsHorizontally(size_t bitmap, int x, int y, UINT* array, int size);
 
-    DLL_EXPORT BOOL BitmapGetPixelsVertically(size_t bitmap, int x, int y, UINT* array, int size);
-
     DLL_EXPORT BOOL BitmapSetPixelsHorizontally(size_t bitmap, int x, int y, UINT* array, int size);
+
+    DLL_EXPORT BOOL BitmapGetPixelsVertically(size_t bitmap, int x, int y, UINT* array, int size);
 
     DLL_EXPORT BOOL BitmapSetPixelsVertically(size_t bitmap, int x, int y, UINT* array, int size);
 
-	DLL_EXPORT BOOL BitmapGetPixelsOfRect(size_t bitmap, int x, int y, int width, int height, UINT* array);
+    DLL_EXPORT BOOL BitmapGetPixelsOfRect(size_t bitmap, int x, int y, int width, int height, UINT* array);
 
-	DLL_EXPORT BOOL BitmapSetPixelsOfRect(size_t bitmap, int x, int y, int width, int height, UINT* array);
+    DLL_EXPORT BOOL BitmapSetPixelsOfRect(size_t bitmap, int x, int y, int width, int height, UINT* array);
 
 #ifdef __cplusplus
 }
