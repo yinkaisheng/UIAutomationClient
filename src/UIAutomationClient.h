@@ -20,11 +20,17 @@ extern "C"
 
     DLL_EXPORT size_t BitmapCreate(int width, int height);
 
+    DLL_EXPORT size_t BitmapResizedFrom(size_t bitmap, int newWidth, int newHeight);
+
+    DLL_EXPORT size_t BitmapRotatedFrom(size_t bitmap, int angle, UINT backgroundArgb = 0xFF000000);
+
+    DLL_EXPORT BOOL BitmapRotateFlip(size_t bitmap, int rotateFlip);
+
     DLL_EXPORT size_t BitmapFromWindow(size_t wnd, int left, int top, int right, int bottom);
 
     DLL_EXPORT size_t BitmapFromHBITMAP(size_t hBitmap);
 
-    DLL_EXPORT size_t BitmapToHBITMAP(size_t bitmap, UINT backgroundArgb = 0xFFFFFFFF);
+    DLL_EXPORT size_t BitmapToHBITMAP(size_t bitmap, UINT backgroundArgb = 0xFF000000);
 
     DLL_EXPORT size_t BitmapFromFile(LPCTSTR path);
 
@@ -49,6 +55,7 @@ extern "C"
     DLL_EXPORT BOOL BitmapGetPixelsOfRect(size_t bitmap, int x, int y, int width, int height, UINT* array);
 
     DLL_EXPORT BOOL BitmapSetPixelsOfRect(size_t bitmap, int x, int y, int width, int height, UINT* array);
+
 
 #ifdef __cplusplus
 }

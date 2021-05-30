@@ -173,6 +173,72 @@ extern "C"
         return reinterpret_cast<size_t>(pBitmap);
     }
 
+    DLL_EXPORT size_t BitmapResizedFrom(size_t bitmap, int newWidth, int newHeight)
+    {
+        if (bitmap && newWidth > 0 && newHeight > 0)
+        {
+            Bitmap* pSrcBitmap = reinterpret_cast<Bitmap*>(bitmap);
+            Bitmap* pBitmap = new Bitmap(newWidth, newHeight, PixelFormat32bppARGB);
+            Graphics graphics{ pBitmap };
+            if (Status::Ok == graphics.DrawImage(pSrcBitmap, 0, 0, newWidth, newHeight))
+            {
+                return reinterpret_cast<size_t>(pBitmap);
+            }
+            else
+            {
+                delete pBitmap;
+            }
+        }
+
+        return 0;
+    }
+
+    DLL_EXPORT size_t BitmapRotatedFrom(size_t bitmap, int angle, UINT backgroundArgb)
+    {
+        if (bitmap == 0)
+        {
+            return 0;
+        }
+
+        Bitmap* pSrcBitmap = reinterpret_cast<Bitmap*>(bitmap);
+        int srcWidth = pSrcBitmap->GetWidth();
+        int srcHeight = pSrcBitmap->GetHeight();
+        double radian = 0.0174532925 * angle;
+        double dcos = cos(radian);
+        double dsin = sin(radian);
+        int newWidth = static_cast<int>(max(abs(srcWidth * dcos - srcHeight * dsin), abs(srcWidth * dcos + srcHeight * dsin)));
+        int newHeight = static_cast<int>(max(abs(srcWidth * dsin - srcHeight * dcos), abs(srcWidth * dsin + srcHeight * dcos)));
+        Bitmap *pBitmap = new Bitmap(newWidth, newHeight);
+        Graphics graphics{ pBitmap };
+        graphics.Clear(Color{ backgroundArgb });
+        Point centerPoint{ newWidth / 2, newHeight / 2 };
+        graphics.TranslateTransform(centerPoint.X, centerPoint.Y);
+        graphics.RotateTransform(angle);
+        graphics.TranslateTransform(-centerPoint.X, -centerPoint.Y);
+        graphics.DrawImage(pSrcBitmap, (newWidth - srcWidth) / 2, (newHeight - srcHeight) / 2, srcWidth, srcHeight);
+        if (Status::Ok == graphics.DrawImage(pSrcBitmap, (newWidth - srcWidth) / 2, (newHeight - srcHeight) / 2, srcWidth, srcHeight))
+        {
+            return reinterpret_cast<size_t>(pBitmap);
+        }
+        else
+        {
+            delete pBitmap;
+        }
+
+        return 0;
+    }
+
+    DLL_EXPORT BOOL BitmapRotateFlip(size_t bitmap, int rotateFlip)
+    {
+        if (bitmap == 0)
+        {
+            return 0;
+        }
+
+        Bitmap* pBitmap = reinterpret_cast<Bitmap*>(bitmap);
+        return pBitmap->RotateFlip(static_cast<RotateFlipType>(rotateFlip)) == Status::Ok;
+    }
+
     DLL_EXPORT size_t BitmapFromWindow(size_t wnd, int left, int top, int right, int bottom)
     {
         HWND hWnd = (HWND)wnd;
@@ -293,11 +359,7 @@ extern "C"
         {
             Bitmap* pBitmap = reinterpret_cast<Bitmap*>(bitmap);
             int width = static_cast<int>(pBitmap->GetWidth());
-            Gdiplus::Rect rect;
-            rect.X = x;
-            rect.Y = y;
-            rect.Width = size;
-            rect.Height = 1;
+            Gdiplus::Rect rect{x, y, size, 1};
             if (x + size > width)
             {
                 rect.X = 0;
@@ -320,11 +382,7 @@ extern "C"
         {
             Bitmap* pBitmap = reinterpret_cast<Bitmap*>(bitmap);
             int width = static_cast<int>(pBitmap->GetWidth());
-            Gdiplus::Rect rect;
-            rect.X = x;
-            rect.Y = y;
-            rect.Width = size;
-            rect.Height = 1;
+            Gdiplus::Rect rect(x, y, size, 1);
             if (x + size > width)
             {
                 rect.X = 0;
@@ -429,6 +487,7 @@ extern "C"
 
         return FALSE;
     }
+
 
 #ifdef __cplusplus
 }
