@@ -243,7 +243,10 @@ extern "C"
     {
         HWND hWnd = (HWND)wnd;
         RECT rcWnd;
-        GetWindowRect(hWnd, &rcWnd);
+        if (!GetWindowRect(hWnd, &rcWnd))
+        {
+            return 0;
+        }
 
         HDC hdc = GetWindowDC(hWnd);
         HBITMAP hBitmap = CopyDC2Bitmap(hdc, left, top, right, bottom);
@@ -253,7 +256,16 @@ extern "C"
         DeleteObject(hBitmap);
         ReleaseDC(hWnd, hdc);
 
-        return reinterpret_cast<size_t>(pBitmap);
+        if (Status::Ok == pBitmap->GetLastStatus())
+        {
+            return reinterpret_cast<size_t>(pBitmap);
+        }
+        else
+        {
+            delete pBitmap;
+        }
+
+        return 0;
     }
 
     DLL_EXPORT size_t BitmapFromHBITMAP(size_t hBitmap)
@@ -265,7 +277,17 @@ extern "C"
 
         HBITMAP hBmp = reinterpret_cast<HBITMAP>(hBitmap);
         Bitmap *pBitmap = Bitmap::FromHBITMAP(hBmp, nullptr);
-        return reinterpret_cast<size_t>(pBitmap);
+
+        if (Status::Ok == pBitmap->GetLastStatus())
+        {
+            return reinterpret_cast<size_t>(pBitmap);
+        }
+        else
+        {
+            delete pBitmap;
+        }
+        
+        return 0;
     }
 
     DLL_EXPORT size_t BitmapToHBITMAP(size_t bitmap, UINT backArgb)
@@ -285,7 +307,17 @@ extern "C"
     DLL_EXPORT size_t BitmapFromFile(LPCTSTR path)
     {
         Bitmap* pBitmap = Bitmap::FromFile(path);
-        return reinterpret_cast<size_t>(pBitmap);
+
+        if (Status::Ok == pBitmap->GetLastStatus())
+        {
+            return reinterpret_cast<size_t>(pBitmap);
+        }
+        else
+        {
+            delete pBitmap;
+        }
+
+        return 0;
     }
 
     DLL_EXPORT BOOL BitmapToFile(size_t bitmap, LPCTSTR path, LPCTSTR gdiplusFormat)
