@@ -153,16 +153,9 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\resource.h" />
-    <ClInclude Include="..\src\stdafx.h" />
-    <ClInclude Include="..\src\targetver.h" />
     <ClInclude Include="..\src\UIAutomationClient.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\src\Resource.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\src\stdafx.cpp" />
     <ClCompile Include="..\src\UIAutomationClient.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
