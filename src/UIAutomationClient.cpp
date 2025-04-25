@@ -219,7 +219,8 @@ extern "C"
 		return -1;  // Failure
 	}
 
-	HBITMAP CopyDC2Bitmap(HDC hdc, int nLeft, int nTop, int nRight, int nBottom)
+	HBITMAP CopyDC2Bitmap(int wndX, int wndY, HDC hdc,
+		int nLeft, int nTop, int nRight, int nBottom, BOOL captureCursor)
 	{
 		int nWidth = nRight - nLeft;
 		int nHeight = nBottom - nTop;
@@ -227,6 +228,20 @@ extern "C"
 		HBITMAP hBitmap = CreateCompatibleBitmap(hdc, nWidth, nHeight);
 		HBITMAP hOldBitmap = (HBITMAP)SelectObject(hMemDC, hBitmap);
 		BitBlt(hMemDC, 0, 0, nWidth, nHeight, hdc, nLeft, nTop, SRCCOPY);
+		if (captureCursor)
+		{
+			CURSORINFO ci = { sizeof(CURSORINFO) };
+			if (GetCursorInfo(&ci) && ci.flags == CURSOR_SHOWING)
+			{
+				ICONINFO ii;
+				if (GetIconInfo(ci.hCursor, &ii))
+				{
+					int xCursor = ci.ptScreenPos.x - wndX - nLeft - ii.xHotspot;
+					int yCursor = ci.ptScreenPos.y - wndY - nTop - ii.yHotspot;
+					DrawIconEx(hMemDC, xCursor, yCursor, ci.hCursor, 0, 0, 0, NULL, DI_NORMAL);
+				}
+			}
+		}
 		hBitmap = (HBITMAP)SelectObject(hMemDC, hOldBitmap);
 		DeleteDC(hMemDC);
 		return hBitmap;
@@ -370,17 +385,11 @@ extern "C"
 		return status;
 	}
 
-	DLL_EXPORT size_t BitmapFromWindow(size_t wnd, int left, int top, int right, int bottom)
+	DLL_EXPORT size_t BitmapFromWindow(size_t wnd, int left, int top, int right, int bottom, int wndX, int wndY, BOOL captureCursor)
 	{
 		HWND hWnd = (HWND)wnd;
-		RECT rcWnd;
-		if (!GetWindowRect(hWnd, &rcWnd))
-		{
-			return 0;
-		}
-
 		HDC hdc = GetWindowDC(hWnd);
-		HBITMAP hBitmap = CopyDC2Bitmap(hdc, left, top, right, bottom);
+		HBITMAP hBitmap = CopyDC2Bitmap(wndX, wndY, hdc, left, top, right, bottom, captureCursor);
 
 		Bitmap* pBitmap = Bitmap::FromHBITMAP(hBitmap, nullptr);
 

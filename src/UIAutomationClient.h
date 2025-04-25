@@ -37,7 +37,7 @@ extern "C"
 
 	DLL_EXPORT UINT BitmapRotateFlip(size_t bitmap, int rotateFlip);
 
-	DLL_EXPORT size_t BitmapFromWindow(size_t wnd, int left, int top, int right, int bottom);
+	DLL_EXPORT size_t BitmapFromWindow(size_t wnd, int left, int top, int right, int bottom, int wndX, int wndY, BOOL captureCursor);
 
 	DLL_EXPORT size_t BitmapFromHBITMAP(size_t hBitmap);
 
