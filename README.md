@@ -1,8 +1,10 @@
+
+
 # UIAutomationClient
 
 This project wraps Windows Gdiplus::Bitmap for my python module Python-UIAutomation-for-Window.
 
-Build VS2017\UIAutomationClient.sln.
+Build UIAutomationClient.sln with Visual Studio 2017.
 
 You'll get
 
